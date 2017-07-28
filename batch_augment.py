@@ -220,7 +220,7 @@ def process(in_dir, out_dir):
     print "Processing %i files in %i batches..." % (len(all_files), len(batches))
 
     for i, batch in enumerate(batches):
-        print "Batch %i of %i (%i files)" % (i+1, len(batches), )
+        print "Batch %i of %i" % (i+1, len(batches))
 
         # Declare temporary files which we will eventually clean up
         temp_files = []
