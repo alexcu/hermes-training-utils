@@ -9,15 +9,17 @@ from shutil import copyfile
 def csv_to_record(csvrow, dst):
     # Record format for keras-frcnn
     data = csvrow.split(",")
-    class_name = data[0]
-    x1 = data[1]
-    y1 = data[2]
-    x2 = data[3]
-    y2 = data[4]
-    return ",".join([dst, x1, y1, x2, y2, class_name])
+    class_name = data[0].rstrip()
+    x1 = data[1].rstrip()
+    y1 = data[2].rstrip()
+    x2 = data[3].rstrip()
+    y2 = data[4].rstrip()
+    # Replace dst with respective jpg
+    img = dst.replace("csv", "jpg")
+    return ",".join([img, x1, y1, x2, y2, class_name])
 
 def csv_to_record_lines(src, dst):
-    return "\n".join([csv_to_bib(row, dst) for row in list(open(src, 'r'))])
+    return [csv_to_record(row, dst) for row in list(open(src, 'r'))]
 
 def copy_unique_image(filename, out_dir):
     # filename is the original 'XXXX_org.jpg' filename; we want all CSVs
@@ -29,18 +31,18 @@ def copy_unique_image(filename, out_dir):
 
     all_related_files = glob("%s/%s*" % (from_dir, image_id))
 
-    copy_text = []
+    records = []
 
     for file in all_related_files:
         file_basename = os.path.basename(file)
         file_ext = os.path.splitext(file)[1]
         file_dst = "%s/%s" % (out_dir, file_basename)
         print "Copying '%s' to '%s'..." % (file, file_dst)
-        if file_ext == "csv":
-            copy_text.append(csv_to_record_lines(file, file_dst))
+        if file_ext == ".csv":
+            records.append(csv_to_record_lines(file, file_dst))
         copyfile(file, file_dst)
 
-    return "\n".join(copy_text)
+    return reduce(lambda x,y: x+y, records)
 
 
 
@@ -65,9 +67,9 @@ def process(in_dir, out_dir):
         if not os.path.exists(out_dir_of_type):
             os.makedirs(out_dir_of_type)
         for file in files:
-            outfile = copy_unique_image(file, out_dir_of_type)
+            records = copy_unique_image(file, out_dir_of_type)
             with open("%s/results_%s.txt" % (out_dir, proc_type), "a") as text_file:
-                text_file.write(outfile)
+                text_file.writelines(["%s\n" % record for record in records])
 
 if __name__ == "__main__":
     # Must provide in and out dir
