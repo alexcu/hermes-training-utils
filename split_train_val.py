@@ -33,7 +33,7 @@ def copy_unique_image(filename, out_dir):
 
     for file in all_related_files:
         file_basename = os.path.basename(file)
-        file_ext = os.path.splitext[1]
+        file_ext = os.path.splitext(file)[1]
         file_dst = "%s/%s" % (out_dir, file_basename)
         print "Copying '%s' to '%s'..." % (file, file_dst)
         if file_ext == "csv":
