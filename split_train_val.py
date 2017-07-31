@@ -31,11 +31,11 @@ def copy_unique_image(filename, out_dir):
 
     copy_text = []
 
-
     for file in all_related_files:
         file_basename = os.path.basename(file)
         file_ext = os.path.splitext[1]
         file_dst = "%s/%s" % (out_dir, file_basename)
+        print "Copying '%s' to '%s'..." % (file, file_dst)
         if file_ext == "csv":
             copy_text.append(csv_to_record_lines(file, file_dst))
         copyfile(file, file_dst)
@@ -80,3 +80,5 @@ if __name__ == "__main__":
     # Setup output
     out_dir = sys.argv[2]
     assert out_dir != None, "Missing output directory (argv[2])"
+
+    process(in_dir, out_dir)
