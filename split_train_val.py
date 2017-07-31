@@ -2,7 +2,7 @@
 
 import os
 import sys
-from random import shuffle, seed
+import random
 from glob import glob
 from shutil import copyfile
 
