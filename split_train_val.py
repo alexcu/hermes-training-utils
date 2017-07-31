@@ -1,7 +1,9 @@
 #!/usr/bin/env python
+
+import os
+import sys
 from random import shuffle, seed
 from glob import glob
-import os
 from shutil import copyfile
 
 def csv_to_record(csvrow, dst):
