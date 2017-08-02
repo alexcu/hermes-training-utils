@@ -319,7 +319,7 @@ if __name__ == "__main__":
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
 
-    if sys.argv[3]:
+    if len(sys.argv) - 1 >= 3:
         if sys.argv[3] == '-t':
             test_output = True
     else:
