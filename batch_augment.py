@@ -249,7 +249,6 @@ def process(in_dir, out_dir, test_output):
             diag1 = np.linalg.norm(np.array(coords[2]) - np.array(coords[0]))
             diag2 = np.linalg.norm(np.array(coords[3]) - np.array(coords[1]))
             padding = max(diag1, diag2) * BIB_PADDING
-            print padding
             coords = np.dot(padding, scale) + coords
             # Map to actual keypoints
             return [ ia.Keypoint(x=c[0], y=c[1]) for c in coords ]
