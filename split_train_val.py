@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+"""
+Splits a directory of given images for training and validation
+"""
+
 import os
 import sys
 import random

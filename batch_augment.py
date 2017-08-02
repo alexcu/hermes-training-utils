@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+"""
+Batch augments a series of original images a number of times
+"""
+
 import os
 import sys
 import imgaug as ia
