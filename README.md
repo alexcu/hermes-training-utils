@@ -67,7 +67,7 @@ We usually limit the number of epochs to 150, as we typically plateau here.
 
 ```
 $ cd /path/to/keras-frcnn
-$ python train-frcnn.py --path /path/to/split/data/result_train.txt \
+$ python train_frcnn.py --path /path/to/split/data/result_train.txt \
                         --config_filename /path/to/out/models/[DATE]/config.pickle \
                         --output_weight_path /path/to/out/models/[DATE]/model_[DATE]_frcnn.hdf5 \
                         [--input_weight_path /path/to/out/models/[DATE]/model_[DATE]_frcnn.hdf5] \
