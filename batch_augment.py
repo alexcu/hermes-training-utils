@@ -18,6 +18,8 @@ from scipy import misc
 from glob import glob
 from tempfile import mkstemp
 
+# The bib padding outwards value (x% of the euclidian distance)
+BIB_PADDING = 0.2
 
 # Resize all our images to SCALE%; map coordinates to new scale
 SCALE = 0.2
@@ -126,12 +128,48 @@ def augment(images, image_identifiers, keypoints, out_dir):
             lines.append(line)
         return "\n".join(lines)
 
-    def save_image(out_dir, image, image_identifier, kpts, augment_no = "", is_augmented = True):
-        unique_id = "%s_%s%s" % (image_identifier, "aug" if is_augmented else "org", augment_no)
+    def plot_img(aug_image, aug_keypoints, aug_rects):
+        # Plots image
+        def plot_keypoints_on_ax(kpts, axis):
+            polys = keypoints_per_person(kpts)
+            for poly in polys:
+                coords = [[coords.x, coords.y] for coords in poly]
+                axis.add_patch(patches.Polygon(coords, linewidth=3, edgecolor='lime', fill=False))
+
+        fig, ax = plt.subplots()
+        ax.imshow(aug_image)
+        plot_keypoints_on_ax(aug_keypoints, ax)
+
+        for rect in aug_rects:
+            width = rect["max_x"] - rect["min_x"]
+            height = rect["max_y"] - rect["min_y"]
+            ax.add_patch(patches.Rectangle((rect["min_x"], rect["min_y"]), width=width, height=height, fill=False, linestyle="dashed", linewidth=3, color="red"))
+
+        return fig
+
+    def plot_aug_results(image, aug_kpts):
+        # Show results inline
+        plt.close()
+        image_aug_keypoints = valid_keypoints(aug_kpts, image)
+        image_aug_rects = keypoints_to_rects(image_aug_keypoints)
+        image_aug_keypoints = ia.KeypointsOnImage(np.array(image_aug_keypoints).flatten(), shape=image.shape)
+        return plot_img(image, image_aug_keypoints, image_aug_rects)
+
+    def save_image(out_dir, image, image_identifier, kpts, augment_no = "", is_augmented = True, is_test_image = False):
+        if is_test_image:
+            key = "test"
+        elif is_augmented:
+            key = "aug"
+        else:
+            key = "org"
+        unique_id = "%s_%s%s" % (image_identifier, key, augment_no)
         print "Saving %s image '%s' as '%s'..." % ("augmented" if is_augmented else "original", image_identifier, unique_id)
-        misc.imsave("%s/%s.jpg" % (out_dir, unique_id), image)
-        with open("%s/%s.csv" % (out_dir, unique_id), "w") as csv:
-            csv.write(generate_csv_for_image_kpts(image, image_identifier, kpts))
+        if not is_test_image:
+            misc.imsave("%s/%s.jpg" % (out_dir, unique_id), image)
+            with open("%s/%s.csv" % (out_dir, unique_id), "w") as csv:
+                csv.write(generate_csv_for_image_kpts(image, image_identifier, kpts))
+        else:
+            image.savefig("%s/%s.jpg" % (out_dir, unique_id))
 
     ###
     # Augmentation begins
@@ -164,8 +202,12 @@ def augment(images, image_identifiers, keypoints, out_dir):
         for image_identifier, data in aug_data.items():
             img, kpts = data[0], data[1]
             save_image(out_dir, img, image_identifier, kpts, augment_no = i)
+            if test_output:
+                fig = plot_aug_results(img, kpts)
+                save_image(out_dir, fig, image_identifier, kpts, augment_no = i, is_test_image = True)
 
-def process(in_dir, out_dir):
+
+def process(in_dir, out_dir, test_output):
     def photo_has_runners(label):
         # Returns true if the label has runners
         return len(label["TaggedRunners"]) > 0
@@ -191,15 +233,26 @@ def process(in_dir, out_dir):
     def extract_bib_keypoints_on_image_from_label(label):
         # Extracts bib keypoints from the data labels
         def extract_bib_keypoint_from_coords_str(coords_str):
-            # Extracts scaled keypoints from the coords_str (i.e., "200, 300" => x=200, y=300)
+            # Extracts scaled keypoints from the coords_str
+            # (i.e., "200, 300" => x=200, y=300)
             coords = [ int(int(pt) * SCALE) for pt in coords_str.split(', ') ]
-            keypoint = ia.Keypoint(x=coords[0], y=coords[1])
-            return keypoint
+            return [coords[0], coords[1]]
 
         def extract_bib_keypoints_from_runner(runner):
             # Extracts keypoints from specific runner
             coords = runner["Bib"]["PixelPoints"]
-            return [ extract_bib_keypoint_from_coords_str(c) for c in coords ]
+            # Extract out keypoints
+            coords = [ extract_bib_keypoint_from_coords_str(c) for c in coords ]
+            # Expand out for padding
+            scale = [ [-1, -1], [1, -1], [1, 1], [-1, 1] ]
+            # Padding is calculated on euclidian distance of opposite diags
+            diag1 = np.linalg.norm(np.array(coords[2]) - np.array(coords[0]))
+            diag2 = np.linalg.norm(np.array(coords[3]) - np.array(coords[1]))
+            padding = max(diag1, diag2) * BIB_PADDING
+            print padding
+            coords = np.dot(padding, scale) + coords
+            # Map to actual keypoints
+            return [ ia.Keypoint(x=c[0], y=c[1]) for c in coords ]
 
         # Extract the image
         image = images[image_identifiers.index(label["Identifier"])]
@@ -266,4 +319,10 @@ if __name__ == "__main__":
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
 
-    process(in_dir, out_dir)
+    if sys.argv[3]:
+        if sys.argv[3] == '-t':
+            test_output = True
+    else:
+        test_output = False
+
+    process(in_dir, out_dir, test_output)
