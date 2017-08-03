@@ -21,11 +21,11 @@ STDIN.read.split("\n").each do |line|
   elsif line.start_with?('person,')
     raw_data = line.split(',')
     regions << {
-      accuracy: raw_data[1],
-      x1: raw_data[2],
-      y1: raw_data[3],
-      x2: raw_data[4],
-      y2: raw_data[5]
+      accuracy: raw_data[1].to_f,
+      x1: raw_data[2].to_f,
+      y1: raw_data[3].to_f,
+      x2: raw_data[4].to_f,
+      y2: raw_data[5].to_f
     }
   end
 end
