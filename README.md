@@ -1,5 +1,13 @@
 # General Pipeline for Training
 
+## 0. Ensure all photos are oriented correctly
+
+Use [imagemagick](http://www.imagemagick.org) to auto-orient all photos
+
+```
+$ mogrify -auto-orient /path/to/tagging/iteration/*.jpg
+```
+
 ## 1. Augmentation
 
 From a tagging iteration from [Argus](http://github.com/alexcu/argus), run batch
@@ -83,6 +91,8 @@ training took.
 ```
 $ ./scrape_keras_train_log.rb /path/to/log/training/[DATE].txt > /path/to/log/training/[DATE].csv
 ```
+
+## 5. Create
 
 ## 5. Validate the model
 
