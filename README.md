@@ -75,13 +75,13 @@ $ python train_frcnn.py --path /path/to/split/data/result_train.txt \
                         --parser simple | tee /path/to/log/training/[DATE].txt \
 ```
 
-## 4. Scrape the log file
+## 4. Scrape the training log file
 
 Scrape the log file from the training above for further analysis on how long
 training took.
 
 ```
-$ ./scrape_log.rb /path/to/log/training/[DATE].txt > /path/to/log/training/[DATE].csv
+$ ./scrape_keras_train_log.rb /path/to/log/training/[DATE].txt > /path/to/log/training/[DATE].csv
 ```
 
 ## 5. Validate the model
