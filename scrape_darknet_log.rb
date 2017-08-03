@@ -18,7 +18,7 @@ elapsed_time = -1.0
 STDIN.read.split("\n").each do |line|
   if line.include?('Predicted in')
     elapsed_time = /[^:]+: Predicted in (\d+.\d+) seconds./.match(line)[1].to_f
-  elsif line.starts_with?('person,')
+  elsif line.start_with?('person,')
     raw_data = line.split(',')
     regions << {
       accuracy: raw_data[1],
