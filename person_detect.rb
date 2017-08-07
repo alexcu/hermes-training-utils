@@ -128,7 +128,7 @@ def proc_files(in_dir, out_dir, darknet_dir, should_crop)
     puts 'Cropping images to bounds...'
     hash[:person][:regions].each_with_index do |region, i|
       in_file = "#{in_dir}/#{id}.jpg"
-      crop_person(in_file, out_dir, id, region, i + 1)
+      crop_person(in_file, out_dir, id, region, i)
     end
   end
 end
