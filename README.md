@@ -92,9 +92,29 @@ training took.
 $ ./scrape_keras_train_log.rb /path/to/log/training/[DATE].txt > /path/to/log/training/[DATE].csv
 ```
 
-## 5. Create
+## 5. Extract humans for improved results (optional)
 
-## 5. Validate the model
+Use the `person_detect.rb` script to extract humans from the image to improve
+bib detection accuracy.
+
+You will need to download and compile **this fork** of [Darknet](https://github.com/alexcu/darknet) with the pre-trained [Tiny YOLO](https://pjreddie.com/darknet/yolo/#tiny) model.
+
+```
+$ git clone https://github.com/alexcu/darknet.git
+$ cd /path/to/darknet
+$ make
+$ wget https://pjreddie.com/media/files/tiny-yolo-voc.weights
+```
+
+Then run the person detector. This will spit out a JSON file of all detected
+people  in the image. You can provide the optional `-c` switch to crop
+detected people into their own individual images.
+
+```
+$ ./person_detect.rb /path/to/input/images /path/to/output/images /path/to/darknet [-c]
+```
+
+## 6. Validate the bib-detectioin model
 
 Under [hermes-bib-detect](https://github.com/alexcu/hermes-bib-detect), use
 the `bib_detect.py` script to test the model using the validation images.
