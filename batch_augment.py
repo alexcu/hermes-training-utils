@@ -19,7 +19,7 @@ from glob import glob
 from tempfile import mkstemp
 
 # The bib padding outwards value (x% of the euclidian distance)
-BIB_PADDING = 0.2
+BIB_PADDING = 0.05
 
 # Resize all our images to SCALE%; map coordinates to new scale
 SCALE = 0.2
@@ -271,7 +271,7 @@ def process(in_dir, out_dir, test_output):
     all_files = glob(glob_d)
 
     # Split into 15%-sized batches
-    n_batches =  int(len(all_files) / 15)
+    n_batches =  int(len(all_files) / 15) or 1
     batches = [all_files[i:i+n_batches] for i in range(0, len(all_files), n_batches)]
 
     print "Processing %i files in %i batches..." % (len(all_files), len(batches))
