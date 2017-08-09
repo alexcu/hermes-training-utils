@@ -75,10 +75,10 @@ for anns, type in lookups:
     with open(txt_out, "a") as text_file:
       line = ','.join([
         src_img,
-        str(ann['bbox'][0]), # x
-        str(ann['bbox'][1]), # y
-        str(ann['bbox'][2]), # w
-        str(ann['bbox'][3]), # h
+        str(int(ann['bbox'][0])), # x
+        str(int(ann['bbox'][1])), # y
+        str(int(ann['bbox'][2])), # w
+        str(int(ann['bbox'][3])), # h
         'text'
       ])
       text_file.write("%s\n" % line)
