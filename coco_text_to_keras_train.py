@@ -81,4 +81,4 @@ for anns, type in lookups:
         str(ann['bbox'][3]), # h
         'text'
       ])
-      text_file.writeline(line)
+      text_file.write("%s\n" % line)
