@@ -72,7 +72,7 @@ def process(in_dir, out_dir):
             os.makedirs(out_dir_of_type)
         for file in files:
             records = copy_unique_image(file, out_dir_of_type)
-            with open("%s/results_%s.txt" % (out_dir, proc_type), "a") as text_file:
+            with open("%s/%s.txt" % (out_dir, proc_type), "a") as text_file:
                 text_file.writelines(["%s\n" % record for record in records])
 
 if __name__ == "__main__":
