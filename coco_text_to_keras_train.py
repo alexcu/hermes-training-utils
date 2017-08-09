@@ -69,15 +69,16 @@ for anns, type in lookups:
     src_img = os.path.join(imgs_dir, ann['filename'])
     dst_img = os.path.join(img_out_dir, ann['filename'])
     if not os.path.exists(dst_img):
+      print "Copying %s to %s" % (src_img, dst_img)
       copyfile(src_img, dst_img)
     # Write record to file
     with open(txt_out, "a") as text_file:
       line = ','.join([
         src_img,
-        ann['bbox'][0], # x
-        ann['bbox'][1], # y
-        ann['bbox'][2], # w
-        ann['bbox'][3], # h
+        str(ann['bbox'][0]), # x
+        str(ann['bbox'][1]), # y
+        str(ann['bbox'][2]), # w
+        str(ann['bbox'][3]), # h
         'text'
       ])
       text_file.writeline(line)
