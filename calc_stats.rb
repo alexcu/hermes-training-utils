@@ -4,20 +4,32 @@ require 'json'
 
 Region = Struct.new(:x1, :y1, :x2, :y2)
 
-def region_area(region)
+def area(region)
   w = region.x2 - region.x1
   h = region.y2 - region.y1
   w * h
 end
 
-def region_intersection(r1, r2)
-  dx = [r1.x2, r2.x2].max - [r1.x1, r2.x1].min
-  dy = [r1.y2, r2.y2].max - [r1.y1, r2.y1].min
-  return dx * dy if dx >= 0 && dy >= 0
+def intersection(r1, r2)
+  region = Region.new
+  region.x1 = [r1.x1, r2.x1].max
+  region.y1 = [r1.y1, r2.y1].max
+  region.x2 = [r1.x1 + r1.x2, r2.x1 + r2.x2].min
+  region.y2 = [r1.y1 + r1.y2, r2.y1 + r2.y2].min
+  region if region.y1 < region.y2 && region.x1 < region.x2
 end
 
-def regions_overlap?(r1, r2)
-  !region_intersection(r1, r2).nil?
+def intersect?(r1, r2)
+  !intersection(r1, r2).nil?
+end
+
+def union(r1, r2)
+  region = Region.new
+  region.x1 = [r1.x1, r2.x1].min
+  region.y1 = [r1.x1, r2.y1].min
+  region.x2 = [r1.x1 + r1.x2, r2.x1 + r2.x2].max
+  region.y2 = [r1.y1 + r1.y2, r2.y1 + r2.y2].max
+  region
 end
 
 def parse_estimated_bibs(json_file)
@@ -31,55 +43,27 @@ def parse_estimated_bibs(json_file)
   end
 end
 
-
-def union_of_regions(r1, r2)
-  region = Region.new
-  region.x1 = [r1.x1, r2.x1].min
-  region.y1 = [r1.x1, r2.y1].min
-  region.x2 = [r1.x1 + r1.x2, r2.x1 + r2.x2].max
-  region.y2 = [r1.y1 + r1.y2, r2.y1 + r2.y2].max
-  region
-end
-
-def intersection_of_regions(r1, r2)
-  region = Region.new
-  region.x1 = [r1.x1, r2.x1].max
-  region.y1 = [r1.x1, r2.y1].max
-  region.x2 = [r1.x1 + r1.x2, r2.x1 + r2.x2].min
-  region.y2 = [r1.y1 + r1.y2, r2.y1 + r2.y2].min
-  w = region.x2 - region.x1
-  h = region.y2 - region.y1
-  return nil if w < 0 || h < 0
-  region
-end
-
-def mp_score(r1, r2)
-  min_bounding_box = union_of_regions(r1, r2)
-  intersection_box = intersection_of_regions(r1, r2)
-  return 0 if intersection_box.nil?
-  puts "R1", r1
-  puts "R2", r2
-  puts "MB", min_bounding_box
-  puts "IB", intersection_box
-  puts "==="
-  intersection_box_area = region_area(intersection_box)
-  min_bounding_box_area = region_area(min_bounding_box)
-  intersection_box_area.to_f / min_bounding_box_area.to_f
+def match_area(r1, r2)
+  return 0 unless intersect?(r1, r2)
+  # There are inconsistencies between match area definition.
+  # I'm going to use the union one as it is referred to morehist.
+  #(2 * area(intersection(r1, r2))) / (area(r1) + area(r2))
+  area(intersection(r1, r2)).to_f / area(union(r1, r2))
 end
 
 def best_match(r, set_of_rects)
-  set_of_rects.map { |r_prime| mp_score(r, r_prime) }.max
+  set_of_rects.map { |r_prime| match_area(r, r_prime) }.max
 end
 
 def precision(ground_truths, estimated_bibs)
-  best_estimates = estimated_bibs.map { |r_e| best_match(r_e, ground_truths) }
-  sum_of_estimates = best_estimates.reduce(:+)
+  best_matches = estimated_bibs.map { |r_e| best_match(r_e, ground_truths) }
+  sum_of_estimates = best_matches.reduce(:+)
   sum_of_estimates / estimated_bibs.count
 end
 
 def recall(ground_truths, estimated_bibs)
-  best_estimates = ground_truths.map { |r_t| best_match(r_t, estimated_bibs) }
-  sum_of_estimates = best_estimates.reduce(:+)
+  best_matches = ground_truths.map { |r_t| best_match(r_t, estimated_bibs) }
+  sum_of_estimates = best_matches.reduce(:+)
   sum_of_estimates / ground_truths.count
 end
 
