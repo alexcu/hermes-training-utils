@@ -74,7 +74,7 @@ for anns, type in lookups:
     # Write record to file
     with open(txt_out, "a") as text_file:
       line = ','.join([
-        src_img,
+        dst_img,
         str(int(ann['bbox'][0])), # x
         str(int(ann['bbox'][1])), # y
         str(int(ann['bbox'][2])), # w
