@@ -75,10 +75,11 @@ for anns, type in lookups:
     with open(txt_out, "a") as text_file:
       line = ','.join([
         dst_img,
-        str(int(ann['bbox'][0])), # x
-        str(int(ann['bbox'][1])), # y
-        str(int(ann['bbox'][2])), # w
-        str(int(ann['bbox'][3])), # h
+        # must be converted from XYWH to x1, y1, x2, y2
+        str(int(ann['bbox'][0])), # x1
+        str(int(ann['bbox'][1])), # y1
+        str(int(ann['bbox'][0] + ann['bbox'][2])), # x2
+        str(int(ann['bbox'][1] + ann['bbox'][3])), # y2
         'text'
       ])
       text_file.write("%s\n" % line)
