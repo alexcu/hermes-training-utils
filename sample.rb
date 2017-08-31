@@ -34,7 +34,7 @@ check_bibs = min_bibs.is_a?(Integer) || max_bibs.is_a?(Integer)
 
 # Cleanup
 FileUtils.rm_r(dst_dir) if Dir.exists?(dst_dir)
-Filtutils.mkdir_p(dst_dir)
+FileUtils.mkdir_p(dst_dir)
 
 puts "#{src_dir} -> #{dst_dir} at sample #{num_times}"
 sample_space = []
