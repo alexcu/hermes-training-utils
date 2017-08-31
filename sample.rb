@@ -38,7 +38,8 @@ FileUtils.mkdir_p(dst_dir)
 
 puts "#{src_dir} -> #{dst_dir} at sample #{num_times}"
 sample_space = []
-num_times.times.each do |idx|
+times = 1
+while times <= num_times
   src_file = photos.sample
   next if sample_space.include?(src_file)
   json_file = "#{src_file}.json"
@@ -55,8 +56,9 @@ num_times.times.each do |idx|
       next unless num_people >= min_bibs && num_people <= max_bibs
     end
   end
-  puts "[#{idx+1}/#{num_times}] Copy #{src_file} -> #{dst_dir}/#{File.basename(src_file)}[.json]"
+  puts "[#{times}/#{num_times}] Copy #{src_file} -> #{dst_dir}/#{File.basename(src_file)}[.json]"
   FileUtils.cp(src_file, dst_dir)
   FileUtils.cp(json_file, dst_dir)
+  times += 1
   sample_space << src_file
 end
