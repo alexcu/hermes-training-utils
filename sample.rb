@@ -44,7 +44,7 @@ num_times.times.each do
     num_people = argus_data[:NumberOfPeopleTagged]
     next unless num_people >= min_bibs || num_people <= max_bibs
   end
-  puts "Copy #{src_file} -> #{dst_dir}/#{src_file}[.json]"
+  puts "Copy #{src_file} -> #{src_file}[.json]"
   FileUtils.cp(src_file, dst_dir)
   FileUtils.cp(json_file, dst_dir)
   sample_space << src_file
