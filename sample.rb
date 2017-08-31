@@ -46,7 +46,9 @@ num_times.times.each do
     json_str = File.read(json_file)
     argus_data = JSON.parse(json_str, symbolize_names: true)
     num_people = argus_data[:NumberOfPeopleTagged]
-    next unless num_people >= min_bibs || num_people <= max_bibs
+    next unless num_people >= min_bibs && max_bibs.nil?
+    next unless num_people <= max_bibs && min_bibs.nil?
+    next unless num_people >= min_bibs && num_people <= max_bibs
   end
   puts "Copy #{src_file} -> #{src_file}[.json]"
   FileUtils.cp(src_file, dst_dir)
