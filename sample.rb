@@ -32,6 +32,10 @@ min_bibs = min_bibs.to_i unless min_bibs.nil?
 max_bibs = max_bibs.to_i unless max_bibs.nil?
 check_bibs = min_bibs.is_a?(Integer) || max_bibs.is_a?(Integer)
 
+# Cleanup
+FileUtils.rm_r(dst_dir) if Dir.exists?(dst_dir)
+Filtutils.mkdir_p(dst_dir)
+
 puts "#{src_dir} -> #{dst_dir} at sample #{num_times}"
 sample_space = []
 num_times.times.each do
