@@ -54,7 +54,7 @@ num_times.times.each do
       next unless num_people >= min_bibs && num_people <= max_bibs
     end
   end
-  puts "Copy #{src_file} -> #{dst_file}/#{File.basename(src_file)}[.json]"
+  puts "Copy #{src_file} -> #{dst_dir}/#{File.basename(src_file)}[.json]"
   FileUtils.cp(src_file, dst_dir)
   FileUtils.cp(json_file, dst_dir)
   sample_space << src_file
