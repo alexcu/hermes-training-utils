@@ -42,6 +42,7 @@ num_times.times.each do
   src_file = photos.sample
   next if sample_space.include?(src_file)
   json_file = "#{src_file}.json"
+  next unless File.exist?(json_file) # Skip non-existent files
   if check_bibs
     json_str = File.read(json_file)
     argus_data = JSON.parse(json_str, symbolize_names: true)
