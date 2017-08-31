@@ -33,7 +33,7 @@ max_bibs = max_bibs.to_i unless max_bibs.nil?
 check_bibs = min_bibs.is_a?(Integer) || max_bibs.is_a?(Integer)
 
 # Cleanup
-FileUtils.rm_r(dst_dir) if Dir.exists?(dst_dir)
+FileUtils.rm_r(dst_dir) if Dir.exist?(dst_dir)
 FileUtils.mkdir_p(dst_dir)
 
 puts "#{src_dir} -> #{dst_dir} at sample #{num_times}"
