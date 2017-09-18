@@ -10,6 +10,8 @@ import random
 from glob import glob
 from shutil import copyfile
 
+TRAIN_PCT = 0.9
+
 def csv_to_record(csvrow, dst):
     # Record format for keras-frcnn
     data = csvrow.split(",")
@@ -58,12 +60,12 @@ def process(in_dir, out_dir):
     random.shuffle(all_original_files)
     print "There are %i original files:" % len(all_original_files)
 
-    num_train = int(0.9 * len(all_original_files))
+    num_train = int(TRAIN_PCT * len(all_original_files))
     train_files = all_original_files[:num_train]
     val_files = all_original_files[num_train:]
 
-    print "90%% (%i) of these will be used for training" % len(train_files)
-    print "10%% (%i) of these will be used for validation" % len(val_files)
+    print "%s%% (%i) of these will be used for training" % (TRAIN_PCT * 100, len(train_files))
+    print "%s%% (%i) of these will be used for validation" % ((1-TRAIN_PCT) * 100, len(val_files))
 
     for proc_type, files in [("train", train_files), ("val", val_files)]:
         print "Now processing '%s'..." % proc_type

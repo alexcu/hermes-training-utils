@@ -14,8 +14,8 @@ def intersection(r1, r2)
   region = Region.new
   region.x1 = [r1.x1, r2.x1].max
   region.y1 = [r1.y1, r2.y1].max
-  region.x2 = [r1.x1 + r1.x2, r2.x1 + r2.x2].min
-  region.y2 = [r1.y1 + r1.y2, r2.y1 + r2.y2].min
+  region.x2 = [r1.x2, r2.x2].min
+  region.y2 = [r1.y2, r2.y2].min
   region if region.y1 < region.y2 && region.x1 < region.x2
 end
 
@@ -26,9 +26,9 @@ end
 def union(r1, r2)
   region = Region.new
   region.x1 = [r1.x1, r2.x1].min
-  region.y1 = [r1.x1, r2.y1].min
-  region.x2 = [r1.x1 + r1.x2, r2.x1 + r2.x2].max
-  region.y2 = [r1.y1 + r1.y2, r2.y1 + r2.y2].max
+  region.y1 = [r1.y1, r2.y1].min
+  region.x2 = [r1.x2, r2.x2].max
+  region.y2 = [r1.y1, r2.y2].max
   region
 end
 
@@ -46,7 +46,7 @@ end
 def match_area(r1, r2)
   return 0 unless intersect?(r1, r2)
   # There are inconsistencies between match area definition.
-  # I'm going to use the union one as it is referred to morehist.
+  # I'm going to use the union one as it is referred to more.
   #(2 * area(intersection(r1, r2))) / (area(r1) + area(r2))
   area(intersection(r1, r2)).to_f / area(union(r1, r2))
 end
