@@ -131,7 +131,7 @@ def augment_imgs(data):
     aug_img_kpts = {}
 
     img_ptrs = [img_data["img_ptr"] for _, img_data in data.items()]
-
+    
     try:
         aug_img_ptrs = dict(zip(img_ids, seq_det.augment_images(img_ptrs)))
     except AssertionError:
@@ -192,7 +192,7 @@ def save_image(out_dir, batch_name, img_ptr, img_id, chars, augment_no = None):
         btm_right = (char["x2"], char["y2"])
         cv2.rectangle(annotated_img_ptr, top_left, btm_right, (0,255,0), 1)
     # Write annotated and non-annotated
-    cv2.imwrite(annotated_img_path, aug_img_ptr)
+    cv2.imwrite(annotated_img_path, annotated_img_ptr)
     cv2.imwrite(img_path, img_ptr)
     with open("%s/%s.csv" % (out_dir, batch_name), "a+") as csv:
         for char in chars:
@@ -206,7 +206,7 @@ def save_image(out_dir, batch_name, img_ptr, img_id, chars, augment_no = None):
             ]))
             csv.write("\n")
 
-def augment_batch(imgs, out_dir, batch_name, num_times = 50):
+def augment_batch(imgs, in_dir, out_dir, batch_name, num_times = 50):
     assert batch_name in ["imgs", "imgs_bw"]
     img_prefix = {
         "imgs": "img",
@@ -216,6 +216,7 @@ def augment_batch(imgs, out_dir, batch_name, num_times = 50):
     for img_id, chars in imgs.items():
         print("Loading %s in batch %s..." % (img_id, batch_name))
         img_path = "%s/%s/%s%s.jpg" % (in_dir, batch_name, img_prefix, img_id)
+        print("--> %s" % img_path)
         img_ptr = cv2.imread(img_path)
         gt_data[img_id] = {
             "img_ptr": img_ptr,
@@ -255,10 +256,11 @@ def process(gt_file, out_dir, num_rounds):
                 "btm_left":  (x1, y2),
                 "char": comps[5]
             })
+    in_dir = os.path.dirname(gt_file)
     print("Batch augment imgs")
-    augment_batch(imgs, out_dir, "imgs")
+    augment_batch(imgs, in_dir, out_dir, "imgs", num_rounds)
     print("Batch augment imgs_bw")
-    augment_batch(imgs, out_dir, "imgs_bw")
+    augment_batch(imgs, in_dir, out_dir, "imgs_bw", num_rounds)
 
 if __name__ == "__main__":
     # Must provide in and out dir
@@ -274,7 +276,7 @@ if __name__ == "__main__":
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
 
-    num_rounds = sys.argv[3]
-    assert out_dir != None, "Missing number of rounds (argv[3])"
+    num_rounds = int(sys.argv[3])
+    assert num_rounds != None, "Missing number of rounds (argv[3])"
 
     process(gt_file, out_dir, num_rounds)
