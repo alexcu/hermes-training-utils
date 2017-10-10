@@ -257,10 +257,18 @@ def process(gt_file, out_dir, num_rounds):
                 "char": comps[5]
             })
     in_dir = os.path.dirname(gt_file)
-    print("Batch augment imgs")
-    augment_batch(imgs, in_dir, out_dir, "imgs", num_rounds)
-    print("Batch augment imgs_bw")
-    augment_batch(imgs, in_dir, out_dir, "imgs_bw", num_rounds)
+    # Split images into 15%-sized batches
+    all_imgs = imgs.keys()
+    n_batches =  int(len(all_imgs) / 30) or 1
+    batches = [all_imgs[i:i+n_batches] for i in range(0, len(all_imgs), n_batches)]
+    for i, batch in enumerate(batches):
+        batch_imgs = {}
+        for img_id, img_data in imgs.items():
+            if img_id in batch:
+                batch_imgs[img_id] = img_data
+        print("Batch %i of %i (#%s imgs)" % (i+1, len(batches), len(batch_imgs.keys())))
+        augment_batch(batch_imgs, in_dir, out_dir, "imgs", num_rounds)
+        augment_batch(batch_imgs, in_dir, out_dir, "imgs_bw", num_rounds)
 
 if __name__ == "__main__":
     # Must provide in and out dir
